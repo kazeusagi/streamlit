@@ -36,14 +36,18 @@ export const StyledTableCaption = styled.div(({ theme }) => ({
   display: "inline-block",
 }))
 
-export const StyledTableBorder = styled.div(({ theme }) => ({
-  // Add the enclosing border on an extra wrapper around the table. This ensures that
-  // when the table scrolls horizontally on small windows, it still shows a border all
-  // around the table and the table doesn't look cut off.
-  border: `${theme.sizes.borderWidth} solid ${theme.colors.dataframeBorderColor}`,
-  borderRadius: theme.radii.default,
-  overflow: "auto",
-}))
+export const StyledTableBorder = styled.div<{ showBorders: boolean }>(
+  ({ theme, showBorders }) => ({
+    // Add the enclosing border on an extra wrapper around the table. This ensures that
+    // when the table scrolls horizontally on small windows, it still shows a border all
+    // around the table and the table doesn't look cut off.
+    border: showBorders
+      ? `${theme.sizes.borderWidth} solid ${theme.colors.dataframeBorderColor}`
+      : "none",
+    borderRadius: showBorders ? theme.radii.default : 0,
+    overflow: "auto",
+  })
+)
 
 export const StyledTable = styled.table(({ theme }) => ({
   width: theme.sizes.full,
@@ -51,15 +55,19 @@ export const StyledTable = styled.table(({ theme }) => ({
   borderSpacing: 0,
 }))
 
-const styleCellFunction = (theme: EmotionTheme): CSSObject => ({
+const styleCellFunction = (theme: EmotionTheme, showBorders: boolean): CSSObject => ({
   // Only have borders on the bottom and right of each cell. And remove the borders
   // of the last row and column to prevent double borders together with the enclosing
   // border from `StyledTableBorder`.
-  borderBottom: `${theme.sizes.borderWidth} solid ${theme.colors.dataframeBorderColor}`,
+  borderBottom: showBorders
+    ? `${theme.sizes.borderWidth} solid ${theme.colors.dataframeBorderColor}`
+    : "none",
   "tbody tr:last-child &": {
     borderBottom: "none",
   },
-  borderRight: `${theme.sizes.borderWidth} solid ${theme.colors.dataframeBorderColor}`,
+  borderRight: showBorders
+    ? `${theme.sizes.borderWidth} solid ${theme.colors.dataframeBorderColor}`
+    : "none",
   "&:last-child": {
     borderRight: "none",
   },
@@ -68,17 +76,17 @@ const styleCellFunction = (theme: EmotionTheme): CSSObject => ({
   fontWeight: theme.fontWeights.normal,
 })
 
-export const StyledTableCell = styled.td(({ theme }) =>
-  styleCellFunction(theme)
+export const StyledTableCell = styled.td<{ showBorders: boolean }>(({ theme, showBorders }) =>
+  styleCellFunction(theme, showBorders)
 )
-export const StyledTableCellHeader = styled.th(({ theme }) => ({
-  ...styleCellFunction(theme),
+export const StyledTableCellHeader = styled.th<{ showBorders: boolean }>(({ theme, showBorders }) => ({
+  ...styleCellFunction(theme, showBorders),
   textAlign: "inherit",
   color: theme.colors.fadedText60,
   paddingLeft: theme.spacing.sm,
 }))
 
-export const StyledEmptyTableCell = styled(StyledTableCell)(({ theme }) => ({
+export const StyledEmptyTableCell = styled(StyledTableCell)<{ showBorders: boolean }>(({ theme }) => ({
   color: theme.colors.darkGray,
   fontStyle: "italic",
   fontSize: theme.fontSizes.md,

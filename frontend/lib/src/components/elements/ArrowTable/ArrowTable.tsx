@@ -48,6 +48,7 @@ export function ArrowTable(props: Readonly<TableProps>): ReactElement {
   const table = props.element
   const { cssId, cssStyles, caption } = table.styler ?? {}
   const { numHeaderRows, numDataRows, numColumns } = table.dimensions
+  const showBorders = table.showBorders
   const dataRowIndices = range(numDataRows)
 
   return (
@@ -55,22 +56,23 @@ export function ArrowTable(props: Readonly<TableProps>): ReactElement {
       {cssStyles && <style>{cssStyles}</style>}
       {/* Add an extra wrapper with the border. This makes sure the border shows around
       the entire table when scrolling horizontally. See also `styled-components.ts`. */}
-      <StyledTableBorder>
+      <StyledTableBorder showBorders={showBorders}>
         <StyledTable id={cssId} data-testid="stTableStyledTable">
-          {numHeaderRows > 0 && generateTableHeader(table)}
+          {numHeaderRows > 0 && generateTableHeader(table, showBorders)}
           <tbody>
             {dataRowIndices.length === 0 ? (
               <tr>
                 <StyledEmptyTableCell
                   data-testid="stTableStyledEmptyTableCell"
                   colSpan={numColumns || 1}
+                  showBorders={showBorders}
                 >
                   empty
                 </StyledEmptyTableCell>
               </tr>
             ) : (
               dataRowIndices.map(rowIndex =>
-                generateTableRow(table, rowIndex, numColumns)
+                generateTableRow(table, rowIndex, numColumns, showBorders)
               )
             )}
           </tbody>
@@ -91,7 +93,7 @@ export function ArrowTable(props: Readonly<TableProps>): ReactElement {
 /**
  * Generate the table header rows from a Quiver object.
  */
-function generateTableHeader(table: Quiver): ReactElement {
+function generateTableHeader(table: Quiver, showBorders: boolean): ReactElement {
   return (
     <thead>
       {getStyledHeaders(table).map((headerRow, rowIndex) => (
@@ -105,6 +107,7 @@ function generateTableHeader(table: Quiver): ReactElement {
               key={colIndex}
               className={header.cssClass}
               scope="col"
+              showBorders={showBorders}
             >
               <StreamlitMarkdown
                 source={header.name || "\u00A0"}
@@ -124,12 +127,13 @@ function generateTableHeader(table: Quiver): ReactElement {
 function generateTableRow(
   table: Quiver,
   rowIndex: number,
-  columns: number
+  columns: number,
+  showBorders: boolean
 ): ReactElement {
   return (
     <tr key={rowIndex}>
       {range(columns).map(columnIndex =>
-        generateTableCell(table, rowIndex, columnIndex)
+        generateTableCell(table, rowIndex, columnIndex, showBorders)
       )}
     </tr>
   )
@@ -141,7 +145,8 @@ function generateTableRow(
 function generateTableCell(
   table: Quiver,
   rowIndex: number,
-  columnIndex: number
+  columnIndex: number,
+  showBorders: boolean
 ): ReactElement {
   const { type, content, contentType } = table.getCell(rowIndex, columnIndex)
   const styledCell = getStyledCell(table, rowIndex, columnIndex)
@@ -177,6 +182,7 @@ function generateTableCell(
           scope="row"
           id={styledCell?.cssId}
           className={styledCell?.cssClass}
+          showBorders={showBorders}
         >
           {hasStylerTooltip && <span className="pd-t" />}
           <StreamlitMarkdown
@@ -193,6 +199,7 @@ function generateTableCell(
           id={styledCell?.cssId}
           className={styledCell?.cssClass}
           style={style}
+          showBorders={showBorders}
         >
           {hasStylerTooltip && <span className="pd-t" />}
           <StreamlitMarkdown
