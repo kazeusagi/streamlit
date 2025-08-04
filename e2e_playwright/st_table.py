@@ -281,3 +281,18 @@ data = pd.DataFrame(
 )
 
 st.table(data)
+
+st.header("Tables without borders")
+
+st.subheader("Simple table without borders")
+simple_df = pd.DataFrame(
+    {
+        "Column 1": ["Value 1", "Value 2", "Value 3"],
+        "Column 2": ["Data A", "Data B", "Data C"],
+        "Column 3": [100, 200, 300],
+    }
+)
+st.table(simple_df, border=False)
+
+st.subheader("Base types without borders")
+st.table(BASE_TYPES_DF, border=False)

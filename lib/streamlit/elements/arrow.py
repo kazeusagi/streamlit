@@ -652,7 +652,7 @@ class ArrowMixin:
         return self.dg._enqueue("arrow_data_frame", proto)
 
     @gather_metrics("table")
-    def table(self, data: Data = None) -> DeltaGenerator:
+    def table(self, data: Data = None, *, border: bool = True) -> DeltaGenerator:
         """Display a static table.
 
         While ``st.dataframe`` is geared towards large datasets and interactive
@@ -675,6 +675,11 @@ class ArrowMixin:
 
             .. |st.markdown| replace:: ``st.markdown``
             .. _st.markdown: https://docs.streamlit.io/develop/api-reference/text/st.markdown
+
+        border : bool
+            Whether to display table borders. If ``border`` is ``True`` (default),
+            all table borders are visible. If ``border`` is ``False``, all table
+            borders become invisible for a cleaner, more condensed appearance.
 
         Examples
         --------
@@ -739,6 +744,7 @@ class ArrowMixin:
         )
 
         proto = ArrowProto()
+        proto.show_borders = border
         marshall(proto, data, default_uuid)
         return self.dg._enqueue("arrow_table", proto, layout_config=layout_config)
 
