@@ -147,6 +147,9 @@ export class Quiver {
   /** Number of bytes in the Arrow IPC bytes. */
   private _num_bytes: number
 
+  /** Whether to show borders around the table and cells. */
+  private readonly _showBorders: boolean
+
   constructor(element: IArrow) {
     const {
       pandasIndexData,
@@ -170,6 +173,7 @@ export class Quiver {
     this._pandasIndexColumnTypes = pandasIndexColumnTypes
     this._styler = styler
     this._num_bytes = element.data?.length ?? 0
+    this._showBorders = element.showBorders ?? true
     this._columnTypes = this._pandasIndexColumnTypes.concat(
       this._dataColumnTypes
     )
@@ -194,6 +198,11 @@ export class Quiver {
    */
   public get styler(): PandasStylerData | undefined {
     return this._styler
+  }
+
+  /** Whether to show borders around the table and cells. */
+  public get showBorders(): boolean {
+    return this._showBorders
   }
 
   /** Dimensions of the DataFrame. */
